@@ -1,5 +1,5 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 
 pub type PackageMap = HashMap<String, PackageInfo>;
 
@@ -34,10 +34,7 @@ pub struct Node {
 
 impl Node {
     pub fn new(name: String, children: Vec<Node>) -> Node {
-        Node {
-            name,
-            children,
-        }
+        Node { name, children }
     }
 }
 

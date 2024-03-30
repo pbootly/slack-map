@@ -1,6 +1,6 @@
+use std::error::Error;
 use std::fs;
 use std::path::Path;
-use std::error::Error;
 
 use crate::packages::PackageInfo;
 
@@ -35,17 +35,20 @@ pub fn parse_file(file: &Path) -> Result<PackageInfo, Box<dyn Error>> {
 
     for line in contents.lines() {
         if let Some(requirement) = requirement_from_line(line) {
-                match requirement.key {
-                    InfoKey::PRGNAM => package_info.name = Some(requirement.value),
-                    InfoKey::VERSION => package_info.version = Some(requirement.value),
-                    InfoKey::REQUIRES => {
-                        let requires: Vec<String> = requirement.value.split_whitespace()
-                            .map(String::from).collect();
-                        package_info.requires = requires;
-                    }
-                    _ => {}
+            match requirement.key {
+                InfoKey::PRGNAM => package_info.name = Some(requirement.value),
+                InfoKey::VERSION => package_info.version = Some(requirement.value),
+                InfoKey::REQUIRES => {
+                    let requires: Vec<String> = requirement
+                        .value
+                        .split_whitespace()
+                        .map(String::from)
+                        .collect();
+                    package_info.requires = requires;
                 }
-        }   
+                _ => {}
+            }
+        }
     }
     Ok(package_info)
 }
@@ -55,15 +58,12 @@ fn requirement_from_line(line: &str) -> Option<Requirement> {
     if let [k, v] = parts.as_slice() {
         let info_k = InfoKey::from_part(k.trim());
         let value = trim_value(v);
-        let requirement = Requirement {
-            key: info_k,
-            value,
-        };
+        let requirement = Requirement { key: info_k, value };
         return Some(requirement);
     }
     None
 }
 
 fn trim_value(v: &str) -> String {
-    return v.trim().replace('\"', "")
+    return v.trim().replace('\"', "");
 }

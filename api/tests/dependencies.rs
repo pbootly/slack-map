@@ -1,11 +1,6 @@
 use slackmap::packages::{build_package_tree, PackageInfo, PackageMap};
 
-
-fn create_package_info(
-    name: &str,
-    version: &str,
-    requires: &[&str],
-) -> PackageInfo {
+fn create_package_info(name: &str, version: &str, requires: &[&str]) -> PackageInfo {
     PackageInfo {
         name: Some(name.to_string()),
         version: Some(version.to_string()),
@@ -16,12 +11,14 @@ fn create_package_info(
 #[test]
 fn tree_creation() {
     let mut packages = PackageMap::new();
-    let d1_dependencies = &["dmenu", 
-    "libev", 
-    "xcb-util-xrm", 
-    "yajl", 
-    "perl-AnyEvent", 
-    "perl-JSON-XS"];
+    let d1_dependencies = &[
+        "dmenu",
+        "libev",
+        "xcb-util-xrm",
+        "yajl",
+        "perl-AnyEvent",
+        "perl-JSON-XS",
+    ];
     let d2_dependencies = &["perl-Canary-Stability", "perl-Types-Serialiser"];
     let main_package = create_package_info("i3", "1", d1_dependencies);
     let package_with_dependencies = create_package_info("perl-JSON-XS", "4", d2_dependencies);
