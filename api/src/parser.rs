@@ -34,7 +34,7 @@ pub fn parse_file(file: &Path) -> Result<PackageInfo, Box<dyn Error>> {
     let contents = fs::read_to_string(file)?;
 
     for line in contents.lines() {
-        if let Some(requirement) = something(line) {
+        if let Some(requirement) = requirement_from_line(line) {
                 match requirement.key {
                     InfoKey::PRGNAM => package_info.name = Some(requirement.value),
                     InfoKey::VERSION => package_info.version = Some(requirement.value),
@@ -50,7 +50,7 @@ pub fn parse_file(file: &Path) -> Result<PackageInfo, Box<dyn Error>> {
     Ok(package_info)
 }
 
-fn something(line: &str) -> Option<Requirement> {
+fn requirement_from_line(line: &str) -> Option<Requirement> {
     let parts: Vec<&str> = line.splitn(2, '=').collect();
     if let [k, v] = parts.as_slice() {
         let info_k = InfoKey::from_part(k.trim());
@@ -62,7 +62,6 @@ fn something(line: &str) -> Option<Requirement> {
         return Some(requirement);
     }
     None
-    
 }
 
 fn trim_value(v: &str) -> String {

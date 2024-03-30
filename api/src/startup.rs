@@ -4,13 +4,13 @@ use walkdir::WalkDir;
 use actix_web::{dev::Server, web, App, HttpServer};
 use actix_cors::Cors;
 use crate::parser::parse_file;
-use crate::packages::PackageInfo;
+use crate::packages::{PackageInfo, PackageMap};
 use crate::routes::{health_check, packages::*};
 
 fn json_packages_from_files(
     path: &str,
-    mut packages: HashMap<String, PackageInfo>,
-    ) -> HashMap<String, PackageInfo>
+    mut packages: PackageMap,
+    ) -> PackageMap 
 {
     for entry in WalkDir::new(path)
         .follow_links(true)
@@ -38,8 +38,7 @@ pub fn run(
     listener: TcpListener,
 ) -> Result<Server, std::io::Error> {
     let hashmap: HashMap<String, PackageInfo> = HashMap::new();
-    let packages = json_packages_from_files(".", hashmap);
-    println!("DONE");
+    let packages = json_packages_from_files(".", hashmap.clone());
     let shared = web::Data::new(packages);
     let server = HttpServer::new(move || {
         let cors = Cors::default()
@@ -52,6 +51,7 @@ pub fn run(
             .app_data(shared.clone())
             .route("/health_check", web::get().to(health_check))
             .route("/packages", web::get().to(list_all_packages))
+            .route("/package", web::get().to(get_package_tree))
     })
     .listen(listener)?
     .run();

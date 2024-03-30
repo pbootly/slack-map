@@ -21,6 +21,7 @@
 
     function handlePackageClick(packageName) {
         selectedPackage = packageName;
+        console.log(selectedPackage);
     }
 </script>
 
@@ -38,16 +39,24 @@
     <tbody>
       {#each packages.filter(pkg => pkg.name.toLowerCase().includes(searchTerm)) as pkg}
         <tr>
-          <td> <a href="javascript:void(0)" on:click={() => handlePackageClick(name)}>{pkg.name}</a></td>
+          {#if pkg.requires.length}
+          <td> <a href="javascript:void(0)" on:click={() => handlePackageClick(pkg.name)}>{pkg.name}</a></td>
+          {:else}
+          <td>{pkg.name}</td>
+          {/if}
+
           <td>{pkg.version}</td>
           <td>{pkg.requires.length}</td>
+        </tr>
+        <tr>
+            {#if selectedPackage === pkg.name}
+                <p>working</p>
+                <DependencyGraph packageName={selectedPackage} packages={packages} />
+            {/if}
         </tr>
       {/each}
     </tbody>
   </table>
-  {#if selectedPackage}
-    <DependencyGraph packageName={selectedPackage} />
-  {/if}
 </main>
 
 <style>
